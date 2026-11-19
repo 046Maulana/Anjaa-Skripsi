@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hallo Anjaa! — Form Data Skripsi Keperawatan</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: '#F5F5F7',
+                        surfaceHover: '#EBEBEF',
+                        ink: '#0C0C0C',
+                        muted: '#71717A'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Pengaturan dasar dan scrollbar halus */
+        body {
+            background-color: #ECEEF2;
+            color: #0C0C0C;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4D4D8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A1A1AA;
+        }
+
+        /* Transisi kartu dan tombol */
+        .option-btn {
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Animasi masuk halus */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-panel {
+            animation: fadeSlideUp 0.25s ease-out forwards;
+        }
+
+        /* Highlight saat validasi gagal */
+        .field-error {
+            box-shadow: 0 0 0 2px #EF4444 !important;
+            background-color: #FEF2F2 !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-0 sm:p-4 lg:p-6 pb-24 lg:pb-6 flex justify-center items-start">
+
+    <!-- Toast Notification (Pengganti alert) -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-[90vw] sm:max-w-md"></div>
+
+    <!-- Main Dashboard Container (Meniru Frame Putih Besar pada Referensi UI) -->
+    <div class="w-full max-w-[1400px] bg-white sm:rounded-[32px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.07)] p-4 sm:p-6 lg:p-7 flex flex-col lg:flex-row gap-6 lg:gap-8 min-h-screen sm:min-h-[860px]">
+
+        <!-- Left Floating Black Sidebar (Desktop) -->
+        <aside class="hidden lg:flex flex-col items-center justify-between w-[76px] shrink-0 bg-ink text-white rounded-[26px] py-7 shadow-lg sticky top-6 h-[calc(100vh-48px)] max-h-[840px]">
+            <!-- Brand Logo -->
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-3xl font-extrabold tracking-tighter select-none">A.</span>
+                <span class="text-[9px] uppercase tracking-widest text-zinc-400 font-semibold">Ns.</span>
+            </div>
+
+            <!-- Navigation Icons -->
+            <nav class="flex flex-col items-center gap-4 w-full px-3" aria-label="Navigasi Utama">
+                <button type="button" onclick="switchTab('demografi')" data-nav="demografi" title="Data Demografi"
+                    class="nav-rail-btn w-12 h-12 rounded-2xl flex items-center justify-center bg-white text-ink transition-all">
+                    <!-- Home / Demografi Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                </button>
+
+                <button type="button" onclick="switchTab('pengetahuan')" data-nav="pengetahuan" title="Kuesioner Pengetahuan (P1-P10)"
+                    class="nav-rail-btn w-12 h-12 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                    <!-- Graduation / Knowledge Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+                    </svg>
+                </button>
+
+                <button type="button" onclick="switchTab('sikap')" data-nav="sikap" title="Kuesioner Sikap (S1-S10)"
+                    class="nav-rail-btn w-12 h-12 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                    <!-- User / Attitude Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </button>
+
+                <button type="button" onclick="switchTab('tindakan')" data-nav="tindakan" title="Kuesioner Tindakan (T1-T5)"
+                    class="nav-rail-btn w-12 h-12 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                    <!-- Clipboard / Action Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                </button>
+
+                <button type="button" onclick="openModal('modal-rekap')" title="Lihat Rekap Data Sesi"
+                    class="w-12 h-12 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all relative">
+                    <!-- Table / Records Icon -->
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <span id="sidebar-badge-count" class="hidden absolute top-2 right-2 w-2.5 h-2.5 bg-emerald-400 rounded-full"></span>
+                </button>
+            </nav>
+
+            <!-- Bottom Action: Buka Google Sheets -->
+            <a href="https://docs.google.com/spreadsheets/d/1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE/edit?usp=drivesdk"
+               target="_blank" rel="noopener noreferrer"
+               title="Buka Google Spreadsheets Skripsi"
+               class="w-12 h-12 rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+            </a>
+        </aside>
+
+        <!-- Center Main Form Column -->
+        <main class="flex-1 flex flex-col gap-5 min-w-0">
+
+            <!-- Mobile Top Bar -->
+            <div class="flex lg:hidden items-center justify-between bg-ink text-white px-4 py-3 rounded-2xl">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl font-extrabold tracking-tight">A.</span>
+                    <span class="text-xs font-medium text-zinc-300 border-l border-zinc-700 pl-2.5">Skripsi Keperawatan</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="openModal('modal-rekap')" class="px-3 py-1.5 rounded-xl bg-zinc-800 text-xs font-semibold text-white">
+                        Rekap (<span id="mobile-rekap-count">0</span>)
+                    </button>
+                    <button type="button" onclick="openModal('modal-sheets')" class="p-2 rounded-xl bg-white text-ink" title="Pengaturan Google Sheets">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hero Greeting Card ("Hallo Anjaa!") -->
+            <section class="bg-surface rounded-[24px] px-6 py-6 sm:px-8 sm:py-7 relative overflow-hidden flex items-center justify-between">
+                <div class="z-10 max-w-[65%] sm:max-w-md">
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white text-[11px] font-bold text-ink mb-2.5 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-ink"></span>
+                        Ilmu Keperawatan • Instrumen Penelitian
+                    </div>
+                    <h1 class="text-2xl sm:text-[34px] font-extrabold tracking-tight text-ink leading-tight">
+                        Hallo Anjaa!
+                    </h1>
+                    <p class="text-xs sm:text-sm text-muted mt-1.5 font-medium leading-relaxed">
+                        Semangat mengumpulkan data skripsi! Silakan lengkapi data demografi dan kuesioner responden di bawah ini.
+                    </p>
+                </div>
+
+                <!-- Minimalist Black & White Line-Art Nurse Illustration (Mengadaptasi Karakter Melambai di Gambar Referensi) -->
+                <div class="shrink-0 -mb-7 -mr-2 sm:mr-2 select-none pointer-events-none" aria-hidden="true">
+                    <svg class="w-28 h-28 sm:w-36 sm:h-36" viewBox="0 0 180 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Waving Hand -->
+                        <path d="M35 84C29 76 23 66 26 61C29 56 35 63 39 70" stroke="#0C0C0C" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M39 70C35 60 32 51 36 49C40 47 44 56 46 66" stroke="#0C0C0C" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M46 66C45 56 45 47 49 47C53 47 53 57 52 67" stroke="#0C0C0C" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M52 67C54 59 57 52 60 54C63 56 60 65 57 73" stroke="#0C0C0C" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M35 84C37 92 44 96 52 93C57 91 59 83 57 73" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Arm connecting to body -->
+                        <path d="M45 94L62 132L82 126" stroke="#0C0C0C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        
+                        <!-- Nurse Coat / Torso -->
+                        <path d="M74 170V128C74 114 86 106 105 106C124 106 136 114 136 128V170" fill="#0C0C0C"/>
+                        <!-- White Collar / Stethoscope V-neck -->
+                        <path d="M92 107L105 128L118 107" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2"/>
+                        <path d="M90 112C88 124 91 136 96 142" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="96" cy="144" r="3.5" fill="#FFFFFF"/>
+                        <path d="M120 112C122 124 120 135 116 140" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+
+                        <!-- Neck -->
+                        <rect x="98" y="88" width="14" height="20" rx="6" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2.5"/>
+
+                        <!-- Hair Back (Bun / Hijab / Neat Nurse Hair) -->
+                        <circle cx="105" cy="58" r="29" fill="#0C0C0C"/>
+                        
+                        <!-- Face -->
+                        <path d="M84 56C84 44 93 36 105 36C117 36 126 44 126 56V67C126 79 117 89 105 89C93 89 84 79 84 67V56Z" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2.5"/>
+                        
+                        <!-- Nurse Cap with Cross -->
+                        <path d="M84 36L89 18H121L126 36H84Z" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2.5" stroke-linejoin="round"/>
+                        <path d="M105 22V31M100.5 26.5H109.5" stroke="#0C0C0C" stroke-width="2.4" stroke-linecap="round"/>
+
+                        <!-- Round Glasses -->
+                        <circle cx="96" cy="60" r="7.5" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2.2"/>
+                        <circle cx="114" cy="60" r="7.5" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2.2"/>
+                        <line x1="103.5" y1="60" x2="106.5" y2="60" stroke="#0C0C0C" stroke-width="2.2"/>
+                        <!-- Eyes -->
+                        <circle cx="96" cy="60" r="1.8" fill="#0C0C0C"/>
+                        <circle cx="114" cy="60" r="1.8" fill="#0C0C0C"/>
+                        <!-- Smile -->
+                        <path d="M100 73C102.5 76 107.5 76 110 73" stroke="#0C0C0C" stroke-width="2.2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- Active Section Strip (Meniru Kartu "Spanish B2 | 83% | Continue" pada Gambar) -->
+            <section class="bg-surface rounded-[20px] p-3.5 sm:px-5 sm:py-4 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center shadow-2xs shrink-0">
+                        <svg class="w-5 h-5 text-ink" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 id="active-section-title" class="text-sm sm:text-base font-bold text-ink">1. Data Demografi Responden</h2>
+                        <p id="active-section-subtitle" class="text-xs text-muted">Identitas balita dan karakteristik ibu</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 sm:gap-4 ml-auto">
+                    <!-- Circular Progress Ring -->
+                    <div class="flex items-center gap-2">
+                        <div class="relative w-10 h-10 flex items-center justify-center">
+                            <svg class="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
+                                <circle cx="18" cy="18" r="15" fill="none" stroke="#E4E4E7" stroke-width="3"/>
+                                <circle id="progress-ring-circle" cx="18" cy="18" r="15" fill="none" stroke="#0C0C0C" stroke-width="3"
+                                        stroke-dasharray="94.2" stroke-dashoffset="94.2" stroke-linecap="round"
+                                        class="transition-all duration-300"/>
+                            </svg>
+                            <span id="progress-ring-text" class="text-[10px] font-extrabold text-ink">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Prev / Next Circle Buttons (Seperti Panah Kiri/Kanan pada Gambar) -->
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="navigateStep(-1)" title="Bagian Sebelumnya"
+                            class="w-9 h-9 rounded-full border border-zinc-300 bg-white hover:bg-ink hover:text-white hover:border-ink flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+                        <button type="button" onclick="navigateStep(1)" title="Bagian Berikutnya"
+                            class="w-9 h-9 rounded-full border border-zinc-300 bg-white hover:bg-ink hover:text-white hover:border-ink flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Tabs (Meniru Tab "All Courses | The Newest | Top Rated | Most Popular") -->
+            <div class="flex flex-col gap-2 pt-1">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-extrabold text-ink tracking-tight">Instrumen Kuesioner</h3>
+                    <button type="button" onclick="resetFormConfirmation()" class="text-xs font-semibold text-muted hover:text-ink transition-colors">
+                        Reset Form
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-4 sm:gap-6 overflow-x-auto pb-1 border-b border-zinc-100 no-scrollbar">
+                    <button type="button" onclick="switchTab('demografi')" data-tab="demografi"
+                        class="tab-btn whitespace-nowrap text-xs sm:text-sm font-bold text-ink pb-2 border-b-2 border-ink transition-all">
+                        Demografi <span id="badge-demografi" class="ml-1 text-[11px] font-semibold text-muted">(0/5)</span>
+                    </button>
+                    <button type="button" onclick="switchTab('pengetahuan')" data-tab="pengetahuan"
+                        class="tab-btn whitespace-nowrap text-xs sm:text-sm font-semibold text-muted hover:text-ink pb-2 border-b-2 border-transparent transition-all">
+                        Pengetahuan <span id="badge-pengetahuan" class="ml-1 text-[11px] font-semibold">(0/10)</span>
+                    </button>
+                    <button type="button" onclick="switchTab('sikap')" data-tab="sikap"
+                        class="tab-btn whitespace-nowrap text-xs sm:text-sm font-semibold text-muted hover:text-ink pb-2 border-b-2 border-transparent transition-all">
+                        Sikap <span id="badge-sikap" class="ml-1 text-[11px] font-semibold">(0/10)</span>
+                    </button>
+                    <button type="button" onclick="switchTab('tindakan')" data-tab="tindakan"
+                        class="tab-btn whitespace-nowrap text-xs sm:text-sm font-semibold text-muted hover:text-ink pb-2 border-b-2 border-transparent transition-all">
+                        Tindakan <span id="badge-tindakan" class="ml-1 text-[11px] font-semibold">(0/5)</span>
+                    </button>
+                    <button type="button" onclick="switchTab('semua')" data-tab="semua"
+                        class="tab-btn whitespace-nowrap text-xs sm:text-sm font-semibold text-muted hover:text-ink pb-2 border-b-2 border-transparent transition-all">
+                        Tampilkan Semua
+                    </button>
+                </div>
+            </div>
+
+            <!-- FORM CONTAINER -->
+            <form id="skripsi-form" onsubmit="handleFormSubmit(event)" class="flex flex-col gap-3.5" novalidate>
+
+                <!-- ================= BAGIAN 1: DATA DEMOGRAFI ================= -->
+                <div id="section-demografi" class="form-section flex flex-col gap-3.5 animate-panel">
+
+                    <!-- 1. Tanggal Lahir Balita (Tanggal, Bulan, Tahun) -->
+                    <div id="card-tgl_lahir" class="bg-surface rounded-[20px] p-4 sm:p-5 flex flex-col gap-3.5 transition-all">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center font-extrabold text-xs text-ink shadow-2xs shrink-0">
+                                D1
+                            </div>
+                            <div>
+                                <label class="block text-sm sm:text-[15px] font-bold text-ink">Tanggal Lahir Balita</label>
+                                <span class="text-xs text-muted">Pilih tanggal, bulan, dan tahun lahir balita</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2.5 sm:gap-3 pt-1">
+                            <!-- Tanggal -->
+                            <div class="flex flex-col gap-1">
+                                <label for="dob-day" class="text-[11px] font-semibold text-muted pl-1">Tanggal</label>
+                                <select id="dob-day" onchange="updateDob()"
+                                    class="w-full h-11 px-3 rounded-xl bg-white border border-zinc-200 text-xs sm:text-sm font-semibold text-ink focus:outline-none focus:border-ink">
+                                    <option value="">Tgl</option>
+                                </select>
+                            </div>
+                            <!-- Bulan -->
+                            <div class="flex flex-col gap-1">
+                                <label for="dob-month" class="text-[11px] font-semibold text-muted pl-1">Bulan</label>
+                                <select id="dob-month" onchange="updateDob()"
+                                    class="w-full h-11 px-3 rounded-xl bg-white border border-zinc-200 text-xs sm:text-sm font-semibold text-ink focus:outline-none focus:border-ink">
+                                    <option value="">Bulan</option>
+                                    <option value="01">01 - Januari</option>
+                                    <option value="02">02 - Februari</option>
+                                    <option value="03">03 - Maret</option>
+                                    <option value="04">04 - April</option>
+                                    <option value="05">05 - Mei</option>
+                                    <option value="06">06 - Juni</option>
+                                    <option value="07">07 - Juli</option>
+                                    <option value="08">08 - Agustus</option>
+                                    <option value="09">09 - September</option>
+                                    <option value="10">10 - Oktober</option>
+                                    <option value="11">11 - November</option>
+                                    <option value="12">12 - Desember</option>
+                                </select>
+                            </div>
+                            <!-- Tahun -->
+                            <div class="flex flex-col gap-1">
+                                <label for="dob-year" class="text-[11px] font-semibold text-muted pl-1">Tahun</label>
+                                <select id="dob-year" onchange="updateDob()"
+                                    class="w-full h-11 px-3 rounded-xl bg-white border border-zinc-200 text-xs sm:text-sm font-semibold text-ink focus:outline-none focus:border-ink">
+                                    <option value="">Tahun</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Usia Ibu -->
+                    <div id="card-usia_ibu" class="bg-surface rounded-[20px] p-4 sm:p-5 flex flex-col gap-3.5 transition-all">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center font-extrabold text-xs text-ink shadow-2xs shrink-0">
+                                D2
+                            </div>
+                            <div>
+                                <span class="block text-sm sm:text-[15px] font-bold text-ink">Usia Ibu</span>
+                                <span class="text-xs text-muted">Pilih kategori rentang usia ibu saat ini</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="options-usia_ibu"></div>
+                    </div>
+
+                    <!-- 3. Pendidikan -->
+                    <div id="card-pendidikan" class="bg-surface rounded-[20px] p-4 sm:p-5 flex flex-col gap-3.5 transition-all">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center font-extrabold text-xs text-ink shadow-2xs shrink-0">
+                                D3
+                            </div>
+                            <div>
+                                <span class="block text-sm sm:text-[15px] font-bold text-ink">Pendidikan Terakhir</span>
+                                <span class="text-xs text-muted">Jenjang pendidikan formal ibu</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="options-pendidikan"></div>
+                    </div>
+
+                    <!-- 4. Pekerjaan -->
+                    <div id="card-pekerjaan" class="bg-surface rounded-[20px] p-4 sm:p-5 flex flex-col gap-3.5 transition-all">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center font-extrabold text-xs text-ink shadow-2xs shrink-0">
+                                D4
+                            </div>
+                            <div>
+                                <span class="block text-sm sm:text-[15px] font-bold text-ink">Pekerjaan Ibu</span>
+                                <span class="text-xs text-muted">Status pekerjaan utama responden</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="options-pekerjaan"></div>
+                    </div>
+
+                    <!-- 5. Usia Balita -->
+                    <div id="card-usia_balita" class="bg-surface rounded-[20px] p-4 sm:p-5 flex flex-col gap-3.5 transition-all">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center font-extrabold text-xs text-ink shadow-2xs shrink-0">
+                                D5
+                            </div>
+                            <div>
+                                <span class="block text-sm sm:text-[15px] font-bold text-ink">Usia Balita</span>
+                                <span class="text-xs text-muted">Kelompok usia balita dalam satuan bulan</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="options-usia_balita"></div>
+                    </div>
+
+                    <!-- Tombol Lanjut ke Pengetahuan -->
+                    <div class="step-next-wrapper flex justify-end pt-1">
+                        <button type="button" onclick="switchTab('pengetahuan')"
+                            class="px-6 py-3 rounded-2xl bg-ink text-white text-xs sm:text-sm font-bold hover:bg-zinc-800 transition-all flex items-center gap-2 shadow-sm">
+                            Lanjut ke Pengetahuan (P1–P10)
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= BAGIAN 2: KUESIONER PENGETAHUAN (P1 - P10) ================= -->
+                <div id="section-pengetahuan" class="form-section hidden flex-col gap-3 animate-panel">
+                    <div class="flex items-center justify-between px-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-muted">Kuesioner Pengetahuan (Skor: 1 atau 0)</span>
+                        <span class="text-xs font-bold text-ink">Total Skor P: <span id="score-p-inline">0</span>/10</span>
+                    </div>
+                    <div id="list-pengetahuan" class="flex flex-col gap-3"></div>
+
+                    <div class="step-next-wrapper flex items-center justify-between pt-2">
+                        <button type="button" onclick="switchTab('demografi')"
+                            class="px-5 py-3 rounded-2xl bg-surface text-ink text-xs sm:text-sm font-bold hover:bg-surfaceHover transition-all">
+                            ← Kembali
+                        </button>
+                        <button type="button" onclick="switchTab('sikap')"
+                            class="px-6 py-3 rounded-2xl bg-ink text-white text-xs sm:text-sm font-bold hover:bg-zinc-800 transition-all flex items-center gap-2 shadow-sm">
+                            Lanjut ke Sikap (S1–S10)
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= BAGIAN 3: KUESIONER SIKAP (S1 - S10) ================= -->
+                <div id="section-sikap" class="form-section hidden flex-col gap-3 animate-panel">
+                    <div class="flex items-center justify-between px-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-muted">Kuesioner Sikap (Skala: 1, 2, 3, 4)</span>
+                        <span class="text-xs font-bold text-ink">Total Skor S: <span id="score-s-inline">0</span>/40</span>
+                    </div>
+                    <div id="list-sikap" class="flex flex-col gap-3"></div>
+
+                    <div class="step-next-wrapper flex items-center justify-between pt-2">
+                        <button type="button" onclick="switchTab('pengetahuan')"
+                            class="px-5 py-3 rounded-2xl bg-surface text-ink text-xs sm:text-sm font-bold hover:bg-surfaceHover transition-all">
+                            ← Kembali
+                        </button>
+                        <button type="button" onclick="switchTab('tindakan')"
+                            class="px-6 py-3 rounded-2xl bg-ink text-white text-xs sm:text-sm font-bold hover:bg-zinc-800 transition-all flex items-center gap-2 shadow-sm">
+                            Lanjut ke Tindakan (T1–T5)
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= BAGIAN 4: KUESIONER TINDAKAN (T1 - T5) ================= -->
+                <div id="section-tindakan" class="form-section hidden flex-col gap-3 animate-panel">
+                    <div class="flex items-center justify-between px-1">
+                        <span class="text-xs font-bold uppercase tracking-wider text-muted">Kuesioner Tindakan (Skor: 1 atau 0)</span>
+                        <span class="text-xs font-bold text-ink">Total Skor T: <span id="score-t-inline">0</span>/5</span>
+                    </div>
+                    <div id="list-tindakan" class="flex flex-col gap-3"></div>
+
+                    <div class="step-next-wrapper flex items-center justify-start pt-2">
+                        <button type="button" onclick="switchTab('sikap')"
+                            class="px-5 py-3 rounded-2xl bg-surface text-ink text-xs sm:text-sm font-bold hover:bg-surfaceHover transition-all">
+                            ← Kembali ke Sikap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Global Submit Bar (Selalu Siap untuk Mengirim Data ke Google Sheets) -->
+                <div class="mt-3 pt-4 border-t border-zinc-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <div class="text-xs text-muted">
+                        Status Koneksi:
+                        <span id="sheets-connection-label" class="font-bold text-ink">Siap Salin & Kirim ke Google Sheets</span>
+                    </div>
+                    <button type="submit" id="btn-submit-main"
+                        class="px-7 py-3.5 rounded-2xl bg-ink text-white text-sm font-bold hover:bg-zinc-800 active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Simpan & Kirim ke Google Sheets
+                    </button>
+                </div>
+
+            </form>
+        </main>
+
+        <!-- Right Statistics & Google Sheets Column (Meniru Kolom Kanan pada Referensi UI) -->
+        <aside class="w-full lg:w-[370px] xl:w-[400px] shrink-0 flex flex-col gap-5">
+
+            <!-- Top Search & Profile Bar -->
+            <div class="flex items-center gap-3">
+                <div class="relative flex-1">
+                    <svg class="w-4 h-4 text-ink absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="quick-jump-input" oninput="handleQuickJump(this.value)"
+                        placeholder="Lompat ke soal (misal: P5, S8, T2)..."
+                        class="w-full h-11 pl-10 pr-4 rounded-2xl bg-surface text-xs sm:text-sm font-medium text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-ink/15 transition-all">
+                </div>
+
+                <!-- Settings Bell / Button -->
+                <button type="button" onclick="openModal('modal-sheets')" title="Konfigurasi Otomatis Google Sheets"
+                    class="w-11 h-11 rounded-2xl bg-surface hover:bg-surfaceHover flex items-center justify-center relative transition-colors shrink-0">
+                    <svg class="w-5 h-5 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span id="webhook-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500 border-2 border-white absolute top-2.5 right-2.5"></span>
+                </button>
+
+                <!-- Anja Profile Avatar Pill -->
+                <div class="w-11 h-11 rounded-2xl bg-ink text-white flex items-center justify-center font-extrabold text-sm shrink-0 select-none" title="Anjaa — Mahasiswa Keperawatan">
+                    AJ
+                </div>
+            </div>
+
+            <!-- Two Metric Cards (Meniru "11 Courses completed" & "4 Courses in progress") -->
+            <div class="grid grid-cols-2 gap-3.5">
+                <div class="bg-surface rounded-[22px] p-5 flex items-center gap-3.5">
+                    <span id="stat-filled-count" class="text-3xl sm:text-[38px] font-extrabold tracking-tight text-ink leading-none">0</span>
+                    <div class="text-xs font-semibold text-muted leading-snug">
+                        Dari 30<br>Item Terisi
+                    </div>
+                </div>
+
+                <div onclick="openModal('modal-rekap')" class="bg-surface hover:bg-surfaceHover cursor-pointer rounded-[22px] p-5 flex items-center gap-3.5 transition-colors">
+                    <span id="stat-submitted-count" class="text-3xl sm:text-[38px] font-extrabold tracking-tight text-ink leading-none">0</span>
+                    <div class="text-xs font-semibold text-muted leading-snug">
+                        Responden<br>Tersimpan
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Score Statistics Widget (Meniru Grafik Kurva Halus "Your statistics") -->
+            <section class="bg-white border border-zinc-100 rounded-[24px] p-5 flex flex-col gap-4 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-extrabold text-ink tracking-tight">Statistik Skor</h3>
+                        <div class="flex items-center gap-4 mt-1">
+                            <span class="text-xs font-bold text-ink">Responden Aktif</span>
+                            <button type="button" onclick="openModal('modal-rekap')" class="text-xs font-semibold text-muted hover:text-ink transition-colors">
+                                Lihat Tabel
+                            </button>
+                        </div>
+                    </div>
+
+                    <span class="px-3 py-1.5 rounded-xl bg-surface text-xs font-bold text-ink">
+                        Real-time
+                    </span>
+                </div>
+
+                <!-- Smooth Spline SVG Chart -->
+                <div class="w-full pt-2">
+                    <svg id="score-spline-chart" viewBox="0 0 320 155" class="w-full h-auto overflow-visible">
+                        <!-- Horizontal Grid Lines -->
+                        <line x1="28" y1="25" x2="300" y2="25" stroke="#F4F4F5" stroke-width="1"/>
+                        <line x1="28" y1="52" x2="300" y2="52" stroke="#F4F4F5" stroke-width="1"/>
+                        <line x1="28" y1="79" x2="300" y2="79" stroke="#F4F4F5" stroke-width="1"/>
+                        <line x1="28" y1="106" x2="300" y2="106" stroke="#F4F4F5" stroke-width="1"/>
+                        <line x1="28" y1="130" x2="300" y2="130" stroke="#E4E4E7" stroke-width="1"/>
+
+                        <!-- Y-Axis Labels (%) -->
+                        <text x="18" y="28" text-anchor="end" class="text-[9px] fill-zinc-400 font-semibold">100%</text>
+                        <text x="18" y="55" text-anchor="end" class="text-[9px] fill-zinc-400 font-semibold">75%</text>
+                        <text x="18" y="82" text-anchor="end" class="text-[9px] fill-zinc-400 font-semibold">50%</text>
+                        <text x="18" y="109" text-anchor="end" class="text-[9px] fill-zinc-400 font-semibold">25%</text>
+                        <text x="18" y="133" text-anchor="end" class="text-[9px] fill-zinc-400 font-semibold">0%</text>
+
+                        <!-- Spline Path -->
+                        <path id="chart-curve-path" d="M 55 130 C 95 130, 95 130, 135 130 C 175 130, 175 130, 215 130 C 250 130, 250 130, 285 130"
+                              fill="none" stroke="#0C0C0C" stroke-width="2.5" stroke-linecap="round"/>
+
+                        <!-- Data Points & Floating Pill Labels -->
+                        <!-- Point 1: Demografi -->
+                        <g id="pt-group-0" transform="translate(55, 130)">
+                            <circle r="4.5" fill="#0C0C0C" stroke="#FFFFFF" stroke-width="2"/>
+                            <g transform="translate(0, -18)">
+                                <rect x="-18" y="-10" width="36" height="17" rx="6" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="1"/>
+                                <text id="pt-label-0" x="0" y="2" text-anchor="middle" class="text-[9px] font-extrabold fill-ink">0/5</text>
+                            </g>
+                        </g>
+
+                        <!-- Point 2: Pengetahuan -->
+                        <g id="pt-group-1" transform="translate(135, 130)">
+                            <circle r="4.5" fill="#0C0C0C" stroke="#FFFFFF" stroke-width="2"/>
+                            <g transform="translate(0, -18)">
+                                <rect x="-20" y="-10" width="40" height="17" rx="6" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="1"/>
+                                <text id="pt-label-1" x="0" y="2" text-anchor="middle" class="text-[9px] font-extrabold fill-ink">0/10</text>
+                            </g>
+                        </g>
+
+                        <!-- Point 3: Sikap -->
+                        <g id="pt-group-2" transform="translate(215, 130)">
+                            <circle r="4.5" fill="#0C0C0C" stroke="#FFFFFF" stroke-width="2"/>
+                            <g transform="translate(0, -18)">
+                                <rect x="-20" y="-10" width="40" height="17" rx="6" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="1"/>
+                                <text id="pt-label-2" x="0" y="2" text-anchor="middle" class="text-[9px] font-extrabold fill-ink">0/40</text>
+                            </g>
+                        </g>
+
+                        <!-- Point 4: Tindakan -->
+                        <g id="pt-group-3" transform="translate(285, 130)">
+                            <circle r="4.5" fill="#0C0C0C" stroke="#FFFFFF" stroke-width="2"/>
+                            <g transform="translate(0, -18)">
+                                <rect x="-18" y="-10" width="36" height="17" rx="6" fill="#FFFFFF" stroke="#E4E4E7" stroke-width="1"/>
+                                <text id="pt-label-3" x="0" y="2" text-anchor="middle" class="text-[9px] font-extrabold fill-ink">0/5</text>
+                            </g>
+                        </g>
+
+                        <!-- X-Axis Labels -->
+                        <text x="55" y="148" text-anchor="middle" class="text-[10px] fill-zinc-500 font-semibold">Demog</text>
+                        <text x="135" y="148" text-anchor="middle" class="text-[10px] fill-zinc-500 font-semibold">P1-P10</text>
+                        <text x="215" y="148" text-anchor="middle" class="text-[10px] fill-zinc-500 font-semibold">S1-S10</text>
+                        <text x="285" y="148" text-anchor="middle" class="text-[10px] fill-zinc-500 font-semibold">T1-T5</text>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- Google Spreadsheets Banner Card (Meniru Kartu "Learn even more!" di Kanan Bawah Gambar) -->
+            <section class="bg-surface rounded-[24px] p-5 flex items-center justify-between gap-3 mt-auto">
+                <div class="flex flex-col items-start gap-2">
+                    <div class="flex items-center gap-2">
+                        <h4 class="text-base font-extrabold text-ink tracking-tight">Google Spreadsheets</h4>
+                    </div>
+                    <p id="sheet-card-status" class="text-[11px] font-bold text-amber-700 bg-amber-100/80 px-2.5 py-0.5 rounded-full">
+                        Mode Manual • Klik Auto-Sync agar otomatis
+                    </p>
+                    <p class="text-xs text-muted leading-relaxed">
+                        Database Skripsi Anja terhubung langsung ke Google Sheets.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2 pt-1">
+                        <a href="https://docs.google.com/spreadsheets/d/1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE/edit?usp=drivesdk"
+                           target="_blank" rel="noopener noreferrer"
+                           class="px-4 py-2.5 rounded-xl bg-ink text-white text-xs font-bold hover:bg-zinc-800 transition-colors inline-flex items-center gap-1.5">
+                            Buka Sheet
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                        <button type="button" onclick="openModal('modal-sheets')"
+                            class="px-3.5 py-2.5 rounded-xl bg-white text-ink border border-zinc-200 text-xs font-bold hover:bg-zinc-50 transition-colors">
+                            Auto-Sync
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Minimalist Line-Art Spreadsheet Illustration -->
+                <div class="shrink-0 select-none" aria-hidden="true">
+                    <svg class="w-20 h-20" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="18" y="14" width="54" height="62" rx="10" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="2.3"/>
+                        <line x1="18" y1="30" x2="72" y2="30" stroke="#0C0C0C" stroke-width="2.2"/>
+                        <line x1="36" y1="30" x2="36" y2="76" stroke="#0C0C0C" stroke-width="2"/>
+                        <line x1="18" y1="45" x2="72" y2="45" stroke="#0C0C0C" stroke-width="1.8"/>
+                        <line x1="18" y1="60" x2="72" y2="60" stroke="#0C0C0C" stroke-width="1.8"/>
+                        <circle cx="27" cy="22" r="2" fill="#0C0C0C"/>
+                        <circle cx="34" cy="22" r="2" fill="#0C0C0C"/>
+                        <path d="M46 52L51 57L62 47" stroke="#0C0C0C" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </section>
+
+        </aside>
+    </div>
+
+    <!-- Mobile Floating Bottom Pill Navigation -->
+    <nav class="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-ink text-white px-3 py-2 rounded-full shadow-2xl flex items-center gap-1.5 border border-zinc-800">
+        <button type="button" onclick="switchTab('demografi')" data-mnav="demografi"
+            class="mnav-btn px-3.5 py-2 rounded-full bg-white text-ink text-xs font-bold transition-all">
+            Demog
+        </button>
+        <button type="button" onclick="switchTab('pengetahuan')" data-mnav="pengetahuan"
+            class="mnav-btn px-3.5 py-2 rounded-full text-zinc-300 text-xs font-bold transition-all">
+            P1–10
+        </button>
+        <button type="button" onclick="switchTab('sikap')" data-mnav="sikap"
+            class="mnav-btn px-3.5 py-2 rounded-full text-zinc-300 text-xs font-bold transition-all">
+            S1–10
+        </button>
+        <button type="button" onclick="switchTab('tindakan')" data-mnav="tindakan"
+            class="mnav-btn px-3.5 py-2 rounded-full text-zinc-300 text-xs font-bold transition-all">
+            T1–5
+        </button>
+    </nav>
+
+    <!-- ================= MODAL 1: KONFIGURASI AUTO-SYNC GOOGLE SHEETS ================= -->
+    <div id="modal-sheets" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs items-center justify-center p-4">
+        <div class="bg-white rounded-[28px] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 sm:p-7 shadow-2xl flex flex-col gap-5">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <span class="inline-block px-2.5 py-1 rounded-full bg-surface text-[11px] font-bold text-ink mb-1.5">Integrasi Database</span>
+                    <h3 class="text-xl font-extrabold text-ink">Koneksi Otomatis Google Spreadsheets</h3>
+                    <p class="text-xs sm:text-sm text-muted mt-1">
+                        Hubungkan form ini ke Google Sheets Anja agar setiap klik <strong>Simpan & Kirim</strong> langsung menambah baris baru otomatis.
+                    </p>
+                </div>
+                <button type="button" onclick="closeModal('modal-sheets')" class="w-9 h-9 rounded-full bg-surface hover:bg-surfaceHover flex items-center justify-center text-ink shrink-0">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Input URL Web App Apps Script -->
+            <div class="bg-surface rounded-2xl p-4 flex flex-col gap-2.5">
+                <label for="apps-script-url-input" class="text-xs font-bold text-ink">
+                    URL Google Apps Script Web App (Wajib berakhiran /exec)
+                </label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="url" id="apps-script-url-input"
+                        placeholder="https://script.google.com/macros/s/AKfycb.../exec"
+                        class="flex-1 h-11 px-3.5 rounded-xl bg-white border border-zinc-200 text-xs sm:text-sm font-medium text-ink focus:outline-none focus:border-ink">
+                    <button type="button" onclick="saveAppsScriptUrl()"
+                        class="px-5 h-11 rounded-xl bg-ink text-white text-xs font-bold hover:bg-zinc-800 transition-colors shrink-0">
+                        Aktifkan URL
+                    </button>
+                    <button type="button" onclick="testAppsScriptConnection()"
+                        class="px-4 h-11 rounded-xl bg-white text-ink border border-zinc-200 text-xs font-bold hover:bg-zinc-100 transition-colors shrink-0">
+                        Tes Kirim
+                    </button>
+                </div>
+                <p class="text-[11px] text-muted">
+                    *Google mengharuskan jembatan Apps Script agar website bisa menulis baris baru secara otomatis ke Spreadsheet Anja.
+                </p>
+            </div>
+
+            <!-- Panduan Singkat 3 Langkah -->
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-ink">Cara Mengaktifkan Auto-Write (1 Menit)</h4>
+                    <button type="button" onclick="copyAppsScriptCode()"
+                        class="px-3 py-1.5 rounded-xl bg-ink text-white text-xs font-bold hover:bg-zinc-800 transition-colors">
+                        Salin Kode Script
+                    </button>
+                </div>
+
+                <ol class="text-xs text-zinc-600 space-y-1.5 list-decimal pl-4">
+                    <li>Buka <a href="https://docs.google.com/spreadsheets/d/1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE/edit?usp=drivesdk" target="_blank" rel="noopener noreferrer" class="font-bold text-ink underline">Google Spreadsheet Skripsi Anja</a>, lalu klik menu <strong>Ekstensi (Extensions) &gt; Apps Script</strong>.</li>
+                    <li>Hapus kode bawaan, lalu <strong>Paste</strong> kode script di bawah ini dan klik ikon <strong>Simpan (Save)</strong>.</li>
+                    <li>Klik <strong>Terapkan (Deploy) &gt; Deployment baru</strong>, pilih jenis <strong>Aplikasi web (Web app)</strong>, ubah <em>Yang memiliki akses (Who has access)</em> menjadi <strong>Siapa saja (Anyone)</strong>, lalu salin URL Web App-nya ke kolom di atas.</li>
+                </ol>
+
+                <pre id="apps-script-code-block" class="bg-ink text-zinc-100 rounded-2xl p-4 text-[11px] leading-relaxed overflow-x-auto font-mono select-all">function doPost(e) {
+  var ss = SpreadsheetApp.openById("1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE");
+  var sheet = ss.getSheets()[0];
+  var data = (e && e.parameter && e.parameter.tgl_lahir)
+    ? e.parameter
+    : JSON.parse(e.postData.contents);
+
+  if (sheet.getLastRow() === 0) {
+    var headers = [
+      "Timestamp", "Tanggal Lahir Balita", "Usia Ibu", "Pendidikan", "Pekerjaan", "Usia Balita",
+      "P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","Total Pengetahuan",
+      "S1","S2","S3","S4","S5","S6","S7","S8","S9","S10","Total Sikap",
+      "T1","T2","T3","T4","T5","Total Tindakan","P+S+T","Total Hasil","Persentase %"
+    ];
+    sheet.appendRow(headers);
+  }
+
+  var totalP = Number(data.total_P || 0);
+  var totalS = Number(data.total_S || 0);
+  var totalT = Number(data.total_T || 0);
+  var totalHasil = totalP + totalS + totalT;
+  var pst = totalP + " + " + totalS + " + " + totalT;
+  var persen = Math.round((totalHasil / 55) * 100) + "%";
+
+  var row = [
+    data.timestamp, data.tgl_lahir, data.usia_ibu, data.pendidikan, data.pekerjaan, data.usia_balita,
+    data.P1, data.P2, data.P3, data.P4, data.P5, data.P6, data.P7, data.P8, data.P9, data.P10, totalP,
+    data.S1, data.S2, data.S3, data.S4, data.S5, data.S6, data.S7, data.S8, data.S9, data.S10, totalS,
+    data.T1, data.T2, data.T3, data.T4, data.T5, totalT, pst, totalHasil, persen
+  ];
+  sheet.appendRow(row);
+  sheet.getRange(sheet.getLastRow(), 35).setNumberFormat("@").setValue(pst);
+
+  return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  var ss = SpreadsheetApp.openById("1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE");
+  var sheet = ss.getSheets()[0];
+  var values = sheet.getDataRange().getValues();
+  var records = [];
+  for (var i = 1; i &lt; values.length; i++) {
+    var r = values[i];
+    if (r.join("").trim() === "") continue;
+    records.push({
+      timestamp: String(r[0] || ""), tgl_lahir: String(r[1] || ""),
+      usia_ibu: String(r[2] || ""), pendidikan: String(r[3] || ""),
+      pekerjaan: String(r[4] || ""), usia_balita: String(r[5] || ""),
+      P1: r[6], P2: r[7], P3: r[8], P4: r[9], P5: r[10], P6: r[11], P7: r[12], P8: r[13], P9: r[14], P10: r[15], total_P: r[16],
+      S1: r[17], S2: r[18], S3: r[19], S4: r[20], S5: r[21], S6: r[22], S7: r[23], S8: r[24], S9: r[25], S10: r[26], total_S: r[27],
+      T1: r[28], T2: r[29], T3: r[30], T4: r[31], T5: r[32], total_T: r[33],
+      p_plus_s_plus_t: String(r[34] || ""), total_hasil: r[35], persentase: String(r[36] || "")
+    });
+  }
+  return ContentService.createTextOutput(JSON.stringify({ status: "success", records: records }))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 2: REKAP & EXPORT DATA SESI ================= -->
+    <div id="modal-rekap" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs items-center justify-center p-4">
+        <div class="bg-white rounded-[28px] w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 sm:p-7 shadow-2xl flex flex-col gap-5">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                    <span class="inline-block px-2.5 py-1 rounded-full bg-surface text-[11px] font-bold text-ink mb-1.5">Data Terkumpul</span>
+                    <h3 class="text-xl font-extrabold text-ink">Rekap Data Responden Anja</h3>
+                    <p class="text-xs sm:text-sm text-muted mt-1">
+                        Salin baris untuk langsung ditempel (Paste) ke Google Spreadsheets atau unduh dalam format CSV.
+                    </p>
+                </div>
+                <button type="button" onclick="closeModal('modal-rekap')" class="w-9 h-9 rounded-full bg-surface hover:bg-surfaceHover flex items-center justify-center text-ink shrink-0">
+                    ✕
+                </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+                <button type="button" onclick="fetchRecordsFromSheets(true)"
+                    class="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors">
+                    ↻ Sinkronkan dari Sheets
+                </button>
+                <button type="button" onclick="copyAllRowsForSheets()"
+                    class="px-4 py-2.5 rounded-xl bg-ink text-white text-xs font-bold hover:bg-zinc-800 transition-colors">
+                    Salin Semua Baris (Siap Paste ke Sheets)
+                </button>
+                <button type="button" onclick="downloadCsv()"
+                    class="px-4 py-2.5 rounded-xl bg-surface text-ink text-xs font-bold hover:bg-surfaceHover transition-colors">
+                    Download File .CSV
+                </button>
+                <a href="https://docs.google.com/spreadsheets/d/1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE/edit?usp=drivesdk"
+                   target="_blank" rel="noopener noreferrer"
+                   class="px-4 py-2.5 rounded-xl border border-zinc-200 text-ink text-xs font-bold hover:bg-zinc-50 transition-colors ml-auto">
+                    Buka Google Spreadsheets ↗
+                </a>
+            </div>
+
+            <!-- Table Container -->
+            <div class="border border-zinc-200 rounded-2xl overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-surface text-ink font-bold border-b border-zinc-200">
+                            <th class="p-3 whitespace-nowrap">#</th>
+                            <th class="p-3 whitespace-nowrap">Tgl Lahir Balita</th>
+                            <th class="p-3 whitespace-nowrap">Usia Ibu</th>
+                            <th class="p-3 whitespace-nowrap">Pendidikan</th>
+                            <th class="p-3 whitespace-nowrap">Pekerjaan</th>
+                            <th class="p-3 whitespace-nowrap">Usia Balita</th>
+                            <th class="p-3 whitespace-nowrap text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rekap-table-body" class="divide-y divide-zinc-100">
+                        <tr>
+                            <td colspan="7" class="p-8 text-center text-muted font-medium">
+                                Memuat data responden dari Google Spreadsheets...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL 3: PANDUAN SAAT AUTO-SYNC BELUM DIAKTIFKAN ================= -->
+    <div id="modal-unsynced-info" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-xs items-center justify-center p-4">
+        <div class="bg-white rounded-[28px] w-full max-w-lg p-6 sm:p-7 shadow-2xl flex flex-col gap-4">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <span class="inline-block px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-bold mb-1.5">Data Tersimpan & Tersalin!</span>
+                    <h3 class="text-lg sm:text-xl font-extrabold text-ink">Satu Langkah Lagi ke Google Sheets</h3>
+                </div>
+                <button type="button" onclick="closeModal('modal-unsynced-info')" class="w-9 h-9 rounded-full bg-surface hover:bg-surfaceHover flex items-center justify-center text-ink shrink-0">
+                    ✕
+                </button>
+            </div>
+
+            <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                Data responden sudah tersimpan di <strong>Rekap Sesi</strong> dan otomatis disalin ke Clipboard. Namun agar setiap klik <strong>Simpan</strong> langsung menambah baris otomatis ke Google Spreadsheets tanpa perlu Paste manual, aktifkan <strong>Auto-Sync</strong> terlebih dahulu.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+                <button type="button" onclick="closeModal('modal-unsynced-info'); openModal('modal-sheets');"
+                    class="flex-1 px-4 py-3 rounded-xl bg-ink text-white text-xs font-bold hover:bg-zinc-800 transition-colors text-center">
+                    Aktifkan Auto-Sync (1 Menit)
+                </button>
+                <a href="https://docs.google.com/spreadsheets/d/1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE/edit?usp=drivesdk"
+                   target="_blank" rel="noopener noreferrer" onclick="closeModal('modal-unsynced-info')"
+                   class="flex-1 px-4 py-3 rounded-xl bg-surface text-ink text-xs font-bold hover:bg-surfaceHover transition-colors text-center">
+                    Buka Sheet & Paste (Ctrl+V) ↗
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
+    <script>
+        /**
+         * Konfigurasi Awal & State Aplikasi Skripsi Anja
+         * Tidak menggunakan localStorage sesuai standar keamanan lingkungan.
+         */
+        const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1kqJ7kWMP4z8S7RqfqADQFMcSGEnRKLS3YqcGb84vZLE/edit?usp=drivesdk";
+
+        // URL Web App Google Apps Script Skripsi Anja (tertaut permanen)
+        let appsScriptWebAppUrl = "https://script.google.com/macros/s/AKfycbxH07DBWfaA8pWXRkKyvfbT_ikAh3tZXZUQH1JYxRCHhuFbP0BSQZocHHVZQJaQ1Q--hg/exec";
+
+        // Pilihan Demografi sesuai permintaan
+        const DEMOGRAPHIC_OPTIONS = {
+            usia_ibu: ["20-25 tahun", "26-30 tahun", "Lebih dari 30 tahun"],
+            pendidikan: ["SMA / sederajat", "Perguruan tinggi"],
+            pekerjaan: ["Pekerjaan hari lepas", "Wiraswasta / swasta", "Tidak bekerja / IRT", "PNS"],
+            usia_balita: ["10-12 bulan", "13-24 bulan", "25-36 bulan", "37-48 bulan"]
+        };
+
+        // Metadata judul tiap bagian
+        const SECTION_META = {
+            demografi: {
+                title: "1. Data Demografi Responden",
+                subtitle: "Identitas balita dan karakteristik ibu"
+            },
+            pengetahuan: {
+                title: "2. Kuesioner Pengetahuan (P1–P10)",
+                subtitle: "Pilih nilai skor 1 atau 0 untuk setiap item"
+            },
+            sikap: {
+                title: "3. Kuesioner Sikap (S1–S10)",
+                subtitle: "Pilih skala penilaian 1, 2, 3, atau 4"
+            },
+            tindakan: {
+                title: "4. Kuesioner Tindakan (T1–T5)",
+                subtitle: "Pilih nilai skor 1 atau 0 untuk setiap item"
+            },
+            semua: {
+                title: "Semua Bagian Instrumen (30 Item)",
+                subtitle: "Tampilan penuh data demografi dan seluruh kuesioner"
+            }
+        };
+
+        // State jawaban responden aktif
+        let formState = {
+            tgl_lahir: "",
+            usia_ibu: "",
+            pendidikan: "",
+            pekerjaan: "",
+            usia_balita: "",
+            P: {}, // P1..P10 (nilai 1 atau 0)
+            S: {}, // S1..S10 (nilai 1, 2, 3, 4)
+            T: {}  // T1..T5  (nilai 1 atau 0)
+        };
+
+        // Penyimpanan rekap data responden
+        let submittedRecords = [];
+        let currentTab = "demografi";
+        const TAB_ORDER = ["demografi", "pengetahuan", "sikap", "tindakan"];
+
+        /**
+         * Inisialisasi seluruh elemen UI saat halaman selesai dimuat
+         */
+        window.addEventListener("DOMContentLoaded", () => {
+            try {
+                initDateSelectors();
+                renderDemographicButtons();
+                renderQuestionLists();
+                updateAllMetrics();
+                if (appsScriptWebAppUrl) {
+                    applyConnectedSheetsUI();
+                    fetchRecordsFromSheets(false);
+                } else {
+                    renderRekapTable();
+                }
+            } catch (err) {
+                console.error("Initialization error:", err);
+                showToast("Terjadi kendala saat memuat komponen halaman.", "error");
+            }
+        });
+
+        /**
+         * Mengisi pilihan dropdown Tanggal (01-31) dan Tahun lahir balita
+         */
+        function initDateSelectors() {
+            const daySelect = document.getElementById("dob-day");
+            const yearSelect = document.getElementById("dob-year");
+            if (!daySelect || !yearSelect) return;
+
+            for (let d = 1; d <= 31; d++) {
+                const val = String(d).padStart(2, "0");
+                const opt = document.createElement("option");
+                opt.value = val;
+                opt.textContent = val;
+                daySelect.appendChild(opt);
+            }
+
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear; y >= currentYear - 6; y--) {
+                const opt = document.createElement("option");
+                opt.value = String(y);
+                opt.textContent = String(y);
+                yearSelect.appendChild(opt);
+            }
+        }
+
+        /**
+         * Memperbarui state tanggal lahir balita dari dropdown tanggal, bulan, tahun
+         */
+        function updateDob() {
+            const d = document.getElementById("dob-day").value;
+            const m = document.getElementById("dob-month").value;
+            const y = document.getElementById("dob-year").value;
+            const card = document.getElementById("card-tgl_lahir");
+
+            if (d && m && y) {
+                formState.tgl_lahir = `${d}-${m}-${y}`;
+                if (card) card.classList.remove("field-error");
+            } else {
+                formState.tgl_lahir = "";
+            }
+            updateAllMetrics();
+        }
+
+        /**
+         * Merender tombol pilihan untuk seluruh field Data Demografi
+         */
+        function renderDemographicButtons() {
+            Object.keys(DEMOGRAPHIC_OPTIONS).forEach((fieldKey) => {
+                const container = document.getElementById(`options-${fieldKey}`);
+                if (!container) return;
+
+                container.innerHTML = DEMOGRAPHIC_OPTIONS[fieldKey].map((optionText) => {
+                    const isSelected = formState[fieldKey] === optionText;
+                    const activeClass = isSelected
+                        ? "bg-ink text-white border-ink shadow-xs"
+                        : "bg-white text-ink border-zinc-200 hover:border-zinc-400";
+
+                    return `
+                        <button type="button"
+                            onclick="selectDemographic('${fieldKey}', '${optionText.replace(/'/g, "\\'")}')"
+                            class="option-btn px-4 py-3 rounded-xl border text-xs sm:text-sm font-bold text-left sm:text-center transition-all ${activeClass}">
+                            ${optionText}
+                        </button>
+                    `;
+                }).join("");
+            });
+        }
+
+        /**
+         * Menyimpan pilihan demografi responden
+         */
+        function selectDemographic(fieldKey, value) {
+            formState[fieldKey] = value;
+            const card = document.getElementById(`card-${fieldKey}`);
+            if (card) card.classList.remove("field-error");
+            renderDemographicButtons();
+            updateAllMetrics();
+        }
+
+        /**
+         * Merender seluruh item soal kuesioner: P1-P10, S1-S10, dan T1-T5
+         */
+        function renderQuestionLists() {
+            // Render Pengetahuan P1 - P10 (opsi: 1, 0)
+            const listP = document.getElementById("list-pengetahuan");
+            if (listP) {
+                let htmlP = "";
+                for (let i = 1; i <= 10; i++) {
+                    const code = `P${i}`;
+                    const currentVal = formState.P[code];
+                    htmlP += buildQuestionCardHtml("P", code, `Pertanyaan Pengetahuan ${i}`, [1, 0], currentVal);
+                }
+                listP.innerHTML = htmlP;
+            }
+
+            // Render Sikap S1 - S10 (opsi: 1, 2, 3, 4)
+            const listS = document.getElementById("list-sikap");
+            if (listS) {
+                let htmlS = "";
+                for (let i = 1; i <= 10; i++) {
+                    const code = `S${i}`;
+                    const currentVal = formState.S[code];
+                    htmlS += buildQuestionCardHtml("S", code, `Pernyataan Sikap ${i}`, [1, 2, 3, 4], currentVal);
+                }
+                listS.innerHTML = htmlS;
+            }
+
+            // Render Tindakan T1 - T5 (opsi: 1, 0)
+            const listT = document.getElementById("list-tindakan");
+            if (listT) {
+                let htmlT = "";
+                for (let i = 1; i <= 5; i++) {
+                    const code = `T${i}`;
+                    const currentVal = formState.T[code];
+                    htmlT += buildQuestionCardHtml("T", code, `Item Tindakan ${i}`, [1, 0], currentVal);
+                }
+                listT.innerHTML = htmlT;
+            }
+        }
+
+        /**
+         * Membangun HTML kartu satu item soal dengan gaya minimalis monokrom
+         */
+        function buildQuestionCardHtml(group, code, label, choices, selectedValue) {
+            const buttonsHtml = choices.map((val) => {
+                const isSelected = selectedValue !== undefined && Number(selectedValue) === val;
+                const btnStyle = isSelected
+                    ? "bg-ink text-white border-ink shadow-xs"
+                    : "bg-white text-ink border-zinc-200 hover:border-zinc-400";
+
+                return `
+                    <button type="button"
+                        onclick="selectQuestion('${group}', '${code}', ${val})"
+                        class="option-btn w-11 h-10 sm:w-12 sm:h-11 rounded-xl border text-xs sm:text-sm font-extrabold flex items-center justify-center ${btnStyle}">
+                        ${val}
+                    </button>
+                `;
+            }).join("");
+
+            return `
+                <div id="item-${code}" class="bg-surface rounded-[20px] px-4 py-3.5 sm:px-5 sm:py-4 flex items-center justify-between gap-3 transition-all">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center font-extrabold text-xs sm:text-sm text-ink shadow-2xs shrink-0">
+                            ${code}
+                        </div>
+                        <div class="truncate">
+                            <span class="block text-sm font-bold text-ink truncate">${code}</span>
+                            <span class="block text-[11px] text-muted truncate">${label}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        ${buttonsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Menyimpan jawaban kuesioner (P, S, atau T) dan memperbarui statistik
+         */
+        function selectQuestion(group, code, value) {
+            formState[group][code] = value;
+            const card = document.getElementById(`item-${code}`);
+            if (card) card.classList.remove("field-error");
+            renderQuestionLists();
+            updateAllMetrics();
+        }
+
+        /**
+         * Menghitung progres pengisian, skor total, ring progress, dan grafik spline real-time
+         */
+        function updateAllMetrics() {
+            const demogKeys = ["tgl_lahir", "usia_ibu", "pendidikan", "pekerjaan", "usia_balita"];
+            const demogFilled = demogKeys.filter((k) => Boolean(formState[k])).length;
+
+            const pKeys = Object.keys(formState.P);
+            const sKeys = Object.keys(formState.S);
+            const tKeys = Object.keys(formState.T);
+
+            const totalFilled = demogFilled + pKeys.length + sKeys.length + tKeys.length;
+            const pctOverall = Math.round((totalFilled / 30) * 100);
+
+            // Hitung total skor tiap bagian
+            const totalP = pKeys.reduce((acc, k) => acc + Number(formState.P[k] || 0), 0);
+            const totalS = sKeys.reduce((acc, k) => acc + Number(formState.S[k] || 0), 0);
+            const totalT = tKeys.reduce((acc, k) => acc + Number(formState.T[k] || 0), 0);
+
+            // Update badge pada tab
+            const badgeDemog = document.getElementById("badge-demografi");
+            const badgeP = document.getElementById("badge-pengetahuan");
+            const badgeS = document.getElementById("badge-sikap");
+            const badgeT = document.getElementById("badge-tindakan");
+
+            if (badgeDemog) badgeDemog.textContent = `(${demogFilled}/5)`;
+            if (badgeP) badgeP.textContent = `(${pKeys.length}/10)`;
+            if (badgeS) badgeS.textContent = `(${sKeys.length}/10)`;
+            if (badgeT) badgeT.textContent = `(${tKeys.length}/5)`;
+
+            // Update inline score
+            const scorePInline = document.getElementById("score-p-inline");
+            const scoreSInline = document.getElementById("score-s-inline");
+            const scoreTInline = document.getElementById("score-t-inline");
+            if (scorePInline) scorePInline.textContent = totalP;
+            if (scoreSInline) scoreSInline.textContent = totalS;
+            if (scoreTInline) scoreTInline.textContent = totalT;
+
+            // Update kartu metrik item terisi
+            const statFilled = document.getElementById("stat-filled-count");
+            if (statFilled) statFilled.textContent = totalFilled;
+
+            // Update circular progress ring
+            const ringCircle = document.getElementById("progress-ring-circle");
+            const ringText = document.getElementById("progress-ring-text");
+            if (ringCircle) {
+                const circumference = 94.2;
+                const offset = circumference - (pctOverall / 100) * circumference;
+                ringCircle.style.strokeDashoffset = offset.toFixed(1);
+            }
+            if (ringText) ringText.textContent = `${pctOverall}%`;
+
+            // Update grafik kurva spline
+            updateSplineChart(demogFilled, totalP, totalS, totalT);
+        }
+
+        /**
+         * Memperbarui titik dan garis kurva halus (Spline SVG) pada widget Statistik Skor
+         */
+        function updateSplineChart(demogFilled, totalP, totalS, totalT) {
+            const ratios = [
+                demogFilled / 5,
+                totalP / 10,
+                totalS / 40,
+                totalT / 5
+            ];
+            const labels = [
+                `${demogFilled}/5`,
+                `${totalP}/10`,
+                `${totalS}/40`,
+                `${totalT}/5`
+            ];
+            const xCoords = [55, 135, 215, 285];
+            const yCoords = ratios.map((r) => Math.round(130 - Math.min(1, Math.max(0, r)) * 105));
+
+            for (let i = 0; i < 4; i++) {
+                const grp = document.getElementById(`pt-group-${i}`);
+                const lbl = document.getElementById(`pt-label-${i}`);
+                if (grp) grp.setAttribute("transform", `translate(${xCoords[i]}, ${yCoords[i]})`);
+                if (lbl) lbl.textContent = labels[i];
+            }
+
+            const pathEl = document.getElementById("chart-curve-path");
+            if (pathEl) {
+                const d = `M ${xCoords[0]} ${yCoords[0]} ` +
+                          `C 95 ${yCoords[0]}, 95 ${yCoords[1]}, ${xCoords[1]} ${yCoords[1]} ` +
+                          `C 175 ${yCoords[1]}, 175 ${yCoords[2]}, ${xCoords[2]} ${yCoords[2]} ` +
+                          `C 250 ${yCoords[2]}, 250 ${yCoords[3]}, ${xCoords[3]} ${yCoords[3]}`;
+                pathEl.setAttribute("d", d);
+            }
+        }
+
+        /**
+         * Berpindah antar bagian/tab form
+         */
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // Update judul header aktif
+            const meta = SECTION_META[tab] || SECTION_META.demografi;
+            const titleEl = document.getElementById("active-section-title");
+            const subEl = document.getElementById("active-section-subtitle");
+            if (titleEl) titleEl.textContent = meta.title;
+            if (subEl) subEl.textContent = meta.subtitle;
+
+            // Update gaya tab horizontal
+            document.querySelectorAll(".tab-btn").forEach((btn) => {
+                const isMatch = btn.dataset.tab === tab;
+                btn.classList.toggle("text-ink", isMatch);
+                btn.classList.toggle("font-bold", isMatch);
+                btn.classList.toggle("border-ink", isMatch);
+                btn.classList.toggle("text-muted", !isMatch);
+                btn.classList.toggle("font-semibold", !isMatch);
+                btn.classList.toggle("border-transparent", !isMatch);
+            });
+
+            // Update gaya sidebar rail desktop
+            document.querySelectorAll(".nav-rail-btn").forEach((btn) => {
+                const isMatch = btn.dataset.nav === tab;
+                btn.classList.toggle("bg-white", isMatch);
+                btn.classList.toggle("text-ink", isMatch);
+                btn.classList.toggle("text-zinc-400", !isMatch);
+            });
+
+            // Update gaya pill navigasi mobile
+            document.querySelectorAll(".mnav-btn").forEach((btn) => {
+                const isMatch = btn.dataset.mnav === tab;
+                btn.classList.toggle("bg-white", isMatch);
+                btn.classList.toggle("text-ink", isMatch);
+                btn.classList.toggle("text-zinc-300", !isMatch);
+            });
+
+            // Tampilkan atau sembunyikan section
+            const sections = ["demografi", "pengetahuan", "sikap", "tindakan"];
+            sections.forEach((sec) => {
+                const el = document.getElementById(`section-${sec}`);
+                if (!el) return;
+                if (tab === "semua" || tab === sec) {
+                    el.classList.remove("hidden");
+                    el.classList.add("flex");
+                } else {
+                    el.classList.add("hidden");
+                    el.classList.remove("flex");
+                }
+            });
+
+            // Sembunyikan tombol lanjut per-langkah saat mode "Tampilkan Semua"
+            document.querySelectorAll(".step-next-wrapper").forEach((wrap) => {
+                wrap.style.display = tab === "semua" ? "none" : "flex";
+            });
+        }
+
+        /**
+         * Navigasi tombol panah kiri (-1) atau kanan (+1)
+         */
+        function navigateStep(direction) {
+            const idx = TAB_ORDER.indexOf(currentTab);
+            const baseIdx = idx === -1 ? 0 : idx;
+            const nextIdx = Math.min(TAB_ORDER.length - 1, Math.max(0, baseIdx + direction));
+            switchTab(TAB_ORDER[nextIdx]);
+        }
+
+        /**
+         * Pencarian cepat untuk lompat langsung ke kode item tertentu (misal: P5, S8, T2, D1)
+         */
+        function handleQuickJump(rawQuery) {
+            const q = rawQuery.trim().toUpperCase();
+            if (!q) return;
+
+            let targetTab = null;
+            let targetElementId = null;
+
+            if (/^P([1-9]|10)$/.test(q)) {
+                targetTab = "pengetahuan";
+                targetElementId = `item-${q}`;
+            } else if (/^S([1-9]|10)$/.test(q)) {
+                targetTab = "sikap";
+                targetElementId = `item-${q}`;
+            } else if (/^T([1-5])$/.test(q)) {
+                targetTab = "tindakan";
+                targetElementId = `item-${q}`;
+            } else if (/^D[1-5]$/.test(q)) {
+                targetTab = "demografi";
+                const dMap = {
+                    D1: "card-tgl_lahir",
+                    D2: "card-usia_ibu",
+                    D3: "card-pendidikan",
+                    D4: "card-pekerjaan",
+                    D5: "card-usia_balita"
+                };
+                targetElementId = dMap[q];
+            }
+
+            if (targetTab && targetElementId) {
+                switchTab(targetTab);
+                const el = document.getElementById(targetElementId);
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.classList.add("ring-2", "ring-ink");
+                    setTimeout(() => el.classList.remove("ring-2", "ring-ink"), 1400);
+                }
+            }
+        }
+
+        /**
+         * Membaca data responden yang sudah tersimpan di Google Spreadsheets (via doGet)
+         */
+        async function fetchRecordsFromSheets(showFeedback = false) {
+            if (!appsScriptWebAppUrl) return;
+            try {
+                const separator = appsScriptWebAppUrl.includes("?") ? "&" : "?";
+                const res = await fetch(`${appsScriptWebAppUrl}${separator}action=read&t=${Date.now()}`, {
+                    method: "GET",
+                    redirect: "follow"
+                });
+                const json = await res.json();
+                if (json && json.status === "success" && Array.isArray(json.records)) {
+                    submittedRecords = json.records;
+                    updateSubmittedBadges();
+                    renderRekapTable();
+                    if (showFeedback) {
+                        showToast(`Berhasil memuat ${submittedRecords.length} data responden dari Google Sheets!`, "success");
+                    }
+                } else {
+                    renderRekapTable();
+                    if (showFeedback) {
+                        showToast("Apps Script belum mendukung pembacaan data. Pastikan versi baru sudah di-Deploy.", "error");
+                    }
+                }
+            } catch (err) {
+                renderRekapTable();
+                if (showFeedback) {
+                    showToast("Gagal membaca data dari Sheets. Periksa Deployment versi baru Apps Script.", "error");
+                }
+            }
+        }
+
+        /**
+         * Memperbarui tampilan status koneksi Google Sheets menjadi aktif
+         */
+        function applyConnectedSheetsUI() {
+            const dot = document.getElementById("webhook-dot");
+            const cardStatus = document.getElementById("sheet-card-status");
+            const connLabel = document.getElementById("sheets-connection-label");
+            const urlInput = document.getElementById("apps-script-url-input");
+
+            if (dot) {
+                dot.classList.remove("bg-amber-500");
+                dot.classList.add("bg-emerald-500");
+            }
+            if (cardStatus) {
+                cardStatus.textContent = "Auto-Sync Aktif • Terhubung ke Google Sheets";
+                cardStatus.className = "text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full";
+            }
+            if (connLabel) {
+                connLabel.textContent = "Terhubung Otomatis ke Google Sheets Anja";
+                connLabel.className = "font-bold text-emerald-700";
+            }
+            if (urlInput && appsScriptWebAppUrl) {
+                urlInput.value = appsScriptWebAppUrl;
+            }
+        }
+
+        /**
+         * Menyimpan URL Web App Google Apps Script baru dari modal konfigurasi
+         */
+        function saveAppsScriptUrl() {
+            const input = document.getElementById("apps-script-url-input");
+            const val = input ? input.value.trim() : "";
+            if (!val || !val.startsWith("https://script.google.com/")) {
+                showToast("Masukkan URL Web App Google Apps Script yang valid (berawalan https://script.google.com/).", "error");
+                return;
+            }
+            appsScriptWebAppUrl = val;
+            applyConnectedSheetsUI();
+            showToast("URL Google Apps Script berhasil diaktifkan!", "success");
+            fetchRecordsFromSheets(false);
+        }
+
+        /**
+         * Mengirim satu baris data uji coba ke Google Spreadsheets
+         */
+        async function testAppsScriptConnection() {
+            const input = document.getElementById("apps-script-url-input");
+            const targetUrl = (input && input.value.trim()) ? input.value.trim() : appsScriptWebAppUrl;
+            if (!targetUrl) {
+                showToast("Isi URL Web App terlebih dahulu sebelum melakukan tes.", "error");
+                return;
+            }
+
+            const samplePayload = new URLSearchParams({
+                timestamp: new Date().toLocaleString("id-ID"),
+                tgl_lahir: "TES_KONEKSI",
+                usia_ibu: "26-30 tahun",
+                pendidikan: "Perguruan tinggi",
+                pekerjaan: "PNS",
+                usia_balita: "13-24 bulan",
+                P1: "1", P2: "1", P3: "1", P4: "1", P5: "1", P6: "1", P7: "1", P8: "1", P9: "1", P10: "1", total_P: "10",
+                S1: "4", S2: "4", S3: "4", S4: "4", S5: "4", S6: "4", S7: "4", S8: "4", S9: "4", S10: "4", total_S: "40",
+                T1: "1", T2: "1", T3: "1", T4: "1", T5: "1", total_T: "5",
+                p_plus_s_plus_t: "10 + 40 + 5",
+                total_hasil: "55",
+                persentase: "100%"
+            });
+
+            try {
+                await fetch(targetUrl, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                    body: samplePayload.toString()
+                });
+                showToast("Data uji coba terkirim! Silakan cek baris baru di Google Spreadsheets Anja.", "success");
+                setTimeout(() => fetchRecordsFromSheets(false), 1500);
+            } catch (err) {
+                showToast("Gagal menghubungi URL Apps Script. Periksa koneksi internet.", "error");
+            }
+        }
+
+        /**
+         * Menyalin kode Google Apps Script ke clipboard
+         */
+        function copyAppsScriptCode() {
+            const codeEl = document.getElementById("apps-script-code-block");
+            if (!codeEl) return;
+            copyTextSafe(codeEl.textContent);
+            showToast("Kode Google Apps Script berhasil disalin!", "success");
+        }
+
+        /**
+         * Validasi seluruh 30 item sebelum mengirim data responden
+         */
+        function validateForm() {
+            document.querySelectorAll(".field-error").forEach((el) => el.classList.remove("field-error"));
+
+            const demogChecks = [
+                { key: "tgl_lahir", label: "Tanggal Lahir Balita", cardId: "card-tgl_lahir" },
+                { key: "usia_ibu", label: "Usia Ibu", cardId: "card-usia_ibu" },
+                { key: "pendidikan", label: "Pendidikan Terakhir", cardId: "card-pendidikan" },
+                { key: "pekerjaan", label: "Pekerjaan Ibu", cardId: "card-pekerjaan" },
+                { key: "usia_balita", label: "Usia Balita", cardId: "card-usia_balita" }
+            ];
+
+            for (const item of demogChecks) {
+                if (!formState[item.key]) {
+                    switchTab("demografi");
+                    const card = document.getElementById(item.cardId);
+                    if (card) {
+                        card.classList.add("field-error");
+                        card.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                    showToast(`Data Demografi "${item.label}" belum dilengkapi.`, "error");
+                    return false;
+                }
+            }
+
+            for (let i = 1; i <= 10; i++) {
+                const code = `P${i}`;
+                if (formState.P[code] === undefined) {
+                    switchTab("pengetahuan");
+                    const card = document.getElementById(`item-${code}`);
+                    if (card) {
+                        card.classList.add("field-error");
+                        card.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                    showToast(`Kuesioner Pengetahuan soal ${code} belum diisi.`, "error");
+                    return false;
+                }
+            }
+
+            for (let i = 1; i <= 10; i++) {
+                const code = `S${i}`;
+                if (formState.S[code] === undefined) {
+                    switchTab("sikap");
+                    const card = document.getElementById(`item-${code}`);
+                    if (card) {
+                        card.classList.add("field-error");
+                        card.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                    showToast(`Kuesioner Sikap soal ${code} belum diisi.`, "error");
+                    return false;
+                }
+            }
+
+            for (let i = 1; i <= 5; i++) {
+                const code = `T${i}`;
+                if (formState.T[code] === undefined) {
+                    switchTab("tindakan");
+                    const card = document.getElementById(`item-${code}`);
+                    if (card) {
+                        card.classList.add("field-error");
+                        card.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                    showToast(`Kuesioner Tindakan soal ${code} belum diisi.`, "error");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /**
+         * Menangani pengiriman form dan menulis data ke Google Spreadsheets Anja
+         */
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            if (!validateForm()) return;
+
+            let totalP = 0;
+            for (let i = 1; i <= 10; i++) totalP += Number(formState.P[`P${i}`]);
+
+            let totalS = 0;
+            for (let i = 1; i <= 10; i++) totalS += Number(formState.S[`S${i}`]);
+
+            let totalT = 0;
+            for (let i = 1; i <= 5; i++) totalT += Number(formState.T[`T${i}`]);
+
+            const totalHasil = totalP + totalS + totalT;
+            const rincianPST = `${totalP} + ${totalS} + ${totalT}`;
+            const persentase = `${Number(((totalHasil / 55) * 100).toFixed(1))}%`;
+
+            const record = {
+                timestamp: new Date().toLocaleString("id-ID"),
+                tgl_lahir: formState.tgl_lahir,
+                usia_ibu: formState.usia_ibu,
+                pendidikan: formState.pendidikan,
+                pekerjaan: formState.pekerjaan,
+                usia_balita: formState.usia_balita,
+                P1: formState.P.P1, P2: formState.P.P2, P3: formState.P.P3, P4: formState.P.P4, P5: formState.P.P5,
+                P6: formState.P.P6, P7: formState.P.P7, P8: formState.P.P8, P9: formState.P.P9, P10: formState.P.P10,
+                total_P: totalP,
+                S1: formState.S.S1, S2: formState.S.S2, S3: formState.S.S3, S4: formState.S.S4, S5: formState.S.S5,
+                S6: formState.S.S6, S7: formState.S.S7, S8: formState.S.S8, S9: formState.S.S9, S10: formState.S.S10,
+                total_S: totalS,
+                T1: formState.T.T1, T2: formState.T.T2, T3: formState.T.T3, T4: formState.T.T4, T5: formState.T.T5,
+                total_T: totalT,
+                p_plus_s_plus_t: rincianPST,
+                total_hasil: totalHasil,
+                persentase: persentase
+            };
+
+            const submitBtn = document.getElementById("btn-submit-main");
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : "";
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span class="animate-pulse">Mengirim ke Google Sheets...</span>`;
+            }
+
+            try {
+                // Simpan ke daftar sesi & salin baris TSV sebagai cadangan instan
+                submittedRecords.push(record);
+                updateSubmittedBadges();
+                renderRekapTable();
+                copyTextSafe(recordToTsvRow(record));
+
+                if (appsScriptWebAppUrl) {
+                    const urlParams = new URLSearchParams();
+                    Object.keys(record).forEach((key) => {
+                        urlParams.append(key, String(record[key] ?? ""));
+                    });
+
+                    await fetch(appsScriptWebAppUrl, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+                        body: urlParams.toString()
+                    });
+
+                    showToast("Data responden berhasil disimpan & dikirim ke Google Spreadsheets Anja!", "success");
+                    setTimeout(() => fetchRecordsFromSheets(false), 1600);
+                } else {
+                    openModal("modal-unsynced-info");
+                }
+
+                resetFormState();
+            } catch (err) {
+                console.error("Submit error:", err);
+                showToast("Data tersimpan di Rekap Sesi & Clipboard, namun gagal terhubung ke jaringan.", "error");
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
+            }
+        }
+
+        /**
+         * Memperbarui angka jumlah responden tersimpan pada kartu metrik, mobile bar, dan badge sidebar
+         */
+        function updateSubmittedBadges() {
+            const count = submittedRecords.length;
+            const statEl = document.getElementById("stat-submitted-count");
+            const mobileEl = document.getElementById("mobile-rekap-count");
+            const sidebarDot = document.getElementById("sidebar-badge-count");
+
+            if (statEl) statEl.textContent = count;
+            if (mobileEl) mobileEl.textContent = count;
+            if (sidebarDot) {
+                sidebarDot.classList.toggle("hidden", count === 0);
+            }
+        }
+
+        /**
+         * Merender tabel rekap data responden di dalam modal Rekap
+         */
+        function renderRekapTable() {
+            const tbody = document.getElementById("rekap-table-body");
+            if (!tbody) return;
+
+            if (submittedRecords.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="p-8 text-center text-muted font-medium">
+                            Belum ada data responden yang ditemukan di Google Spreadsheets.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = submittedRecords.map((r, idx) => {
+                return `
+                    <tr class="hover:bg-surface/60 transition-colors">
+                        <td class="p-3 font-bold text-ink">${idx + 1}</td>
+                        <td class="p-3 whitespace-nowrap">${r.tgl_lahir}</td>
+                        <td class="p-3 whitespace-nowrap">${r.usia_ibu}</td>
+                        <td class="p-3 whitespace-nowrap">${r.pendidikan}</td>
+                        <td class="p-3 whitespace-nowrap">${r.pekerjaan}</td>
+                        <td class="p-3 whitespace-nowrap">${r.usia_balita}</td>
+                        <td class="p-3 text-right">
+                            <button type="button" onclick="copySingleRow(${idx})"
+                                class="px-2.5 py-1 rounded-lg bg-surface hover:bg-ink hover:text-white text-[11px] font-bold transition-colors">
+                                Salin Baris
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        /**
+         * Menyalin satu baris responden dari tabel rekap
+         */
+        function copySingleRow(idx) {
+            const rec = submittedRecords[idx];
+            if (!rec) return;
+            copyTextSafe(recordToTsvRow(rec));
+            showToast(`Baris responden #${idx + 1} disalin! Siap Paste (Ctrl+V) di Google Sheets.`, "success");
+        }
+
+        /**
+         * Menyalin seluruh baris responden dalam format TSV untuk langsung ditempel ke Google Sheets
+         */
+        function copyAllRowsForSheets() {
+            if (submittedRecords.length === 0) {
+                showToast("Belum ada data responden untuk disalin.", "error");
+                return;
+            }
+            const tsvContent = submittedRecords.map((rec) => recordToTsvRow(rec)).join("\n");
+            copyTextSafe(tsvContent);
+            showToast(`${submittedRecords.length} baris data disalin! Silakan Paste (Ctrl+V) di Google Spreadsheets.`, "success");
+        }
+
+        /**
+         * Mengunduh seluruh data responden dalam format file .CSV
+         */
+        function downloadCsv() {
+            if (submittedRecords.length === 0) {
+                showToast("Belum ada data responden untuk diunduh.", "error");
+                return;
+            }
+
+            const headers = [
+                "Timestamp", "Tanggal Lahir Balita", "Usia Ibu", "Pendidikan", "Pekerjaan", "Usia Balita",
+                "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "Total Pengetahuan",
+                "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "Total Sikap",
+                "T1", "T2", "T3", "T4", "T5", "Total Tindakan", "P+S+T", "Total Hasil", "Persentase %"
+            ];
+
+            const escapeCsv = (val) => `"${String(val ?? "").replace(/"/g, '""')}"`;
+            const rows = submittedRecords.map((r) => [
+                r.timestamp, r.tgl_lahir, r.usia_ibu, r.pendidikan, r.pekerjaan, r.usia_balita,
+                r.P1, r.P2, r.P3, r.P4, r.P5, r.P6, r.P7, r.P8, r.P9, r.P10, r.total_P,
+                r.S1, r.S2, r.S3, r.S4, r.S5, r.S6, r.S7, r.S8, r.S9, r.S10, r.total_S,
+                r.T1, r.T2, r.T3, r.T4, r.T5, r.total_T, r.p_plus_s_plus_t, r.total_hasil, r.persentase
+            ].map(escapeCsv).join(","));
+
+            const csvString = "\uFEFF" + [headers.map(escapeCsv).join(","), ...rows].join("\n");
+            const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Data_Skripsi_Anja_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showToast("File CSV berhasil diunduh!", "success");
+        }
+
+        /**
+         * Mengonversi objek record responden menjadi baris tab-separated (TSV) sesuai urutan kolom A-AK
+         */
+        function recordToTsvRow(r) {
+            return [
+                r.timestamp, r.tgl_lahir, r.usia_ibu, r.pendidikan, r.pekerjaan, r.usia_balita,
+                r.P1, r.P2, r.P3, r.P4, r.P5, r.P6, r.P7, r.P8, r.P9, r.P10, r.total_P,
+                r.S1, r.S2, r.S3, r.S4, r.S5, r.S6, r.S7, r.S8, r.S9, r.S10, r.total_S,
+                r.T1, r.T2, r.T3, r.T4, r.T5, r.total_T, r.p_plus_s_plus_t, r.total_hasil, r.persentase
+            ].join("\t");
+        }
+
+        /**
+         * Konfirmasi dua-klik tanpa alert/confirm bawaan browser untuk mereset isian form
+         */
+        let resetConfirmTimer = null;
+        function resetFormConfirmation() {
+            const btn = document.querySelector("button[onclick='resetFormConfirmation()']");
+            if (!btn) {
+                resetFormState();
+                return;
+            }
+
+            if (btn.dataset.armed === "true") {
+                clearTimeout(resetConfirmTimer);
+                btn.dataset.armed = "false";
+                btn.textContent = "Reset Form";
+                btn.classList.remove("text-red-600", "font-bold");
+                resetFormState();
+                showToast("Isian form berhasil dikosongkan.", "success");
+            } else {
+                btn.dataset.armed = "true";
+                btn.textContent = "Klik Lagi untuk Reset";
+                btn.classList.add("text-red-600", "font-bold");
+                showToast("Klik tombol 'Klik Lagi untuk Reset' sekali lagi untuk mengosongkan form.", "info");
+                resetConfirmTimer = setTimeout(() => {
+                    btn.dataset.armed = "false";
+                    btn.textContent = "Reset Form";
+                    btn.classList.remove("text-red-600", "font-bold");
+                }, 4000);
+            }
+        }
+
+        /**
+         * Mengosongkan seluruh state jawaban form ke kondisi awal
+         */
+        function resetFormState() {
+            formState = {
+                tgl_lahir: "",
+                usia_ibu: "",
+                pendidikan: "",
+                pekerjaan: "",
+                usia_balita: "",
+                P: {},
+                S: {},
+                T: {}
+            };
+
+            const dayEl = document.getElementById("dob-day");
+            const monthEl = document.getElementById("dob-month");
+            const yearEl = document.getElementById("dob-year");
+            if (dayEl) dayEl.value = "";
+            if (monthEl) monthEl.value = "";
+            if (yearEl) yearEl.value = "";
+
+            document.querySelectorAll(".field-error").forEach((el) => el.classList.remove("field-error"));
+            renderDemographicButtons();
+            renderQuestionLists();
+            updateAllMetrics();
+            switchTab("demografi");
+        }
+
+        /**
+         * Membuka dialog modal berdasarkan ID
+         */
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+            if (modalId === "modal-rekap") {
+                renderRekapTable();
+            }
+        }
+
+        /**
+         * Menutup dialog modal berdasarkan ID
+         */
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
+        /**
+         * Menyalin teks ke clipboard dengan fallback textarea untuk kompatibilitas iframe
+         */
+        function copyTextSafe(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try {
+                document.execCommand("copy");
+            } catch (e) {
+                console.warn("Clipboard fallback failed:", e);
+            }
+            document.body.removeChild(ta);
+        }
+
+        /**
+         * Menampilkan notifikasi toast elegan di pojok kanan atas
+         */
+        function showToast(message, type = "info") {
+            const container = document.getElementById("toast-container");
+            if (!container) return;
+
+            const colors = {
+                success: "bg-ink text-white border-zinc-800",
+                error: "bg-red-600 text-white border-red-700",
+                info: "bg-white text-ink border-zinc-200 shadow-lg"
+            };
+
+            const toast = document.createElement("div");
+            toast.className = `pointer-events-auto px-4 py-3 rounded-2xl border text-xs sm:text-sm font-semibold shadow-xl transition-all duration-300 flex items-center gap-2.5 ${colors[type] || colors.info}`;
+            toast.innerHTML = `
+                <span class="w-2 h-2 rounded-full shrink-0 ${type === "error" ? "bg-white" : "bg-emerald-400"}"></span>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transform = "translateY(-6px)";
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 300);
+            }, 3800);
+        }
+    </script>
+</body>
+</html>
